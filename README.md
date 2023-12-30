@@ -57,6 +57,15 @@ An action has to have these values:
     - Only required when the action has the ``light`` type.
     - The ID of the target panel.
     - Can either be the ID of a Nanoleaf panel, one of the aliases set in the ``dictionary`` value, or "RAND", which lights up a random available panel.
+- important
+    - Not required.
+    - Sets the panel state as ``important``.
+    - Acts as a bool, but can be any value.
+    - Is false by default.
+    - ``light``
+        - Isn't affected by ``set`` actions without the ``important`` value
+    - ``set``
+        - Affects every panel, even those that have been previously set as ``important``.
 
 An example of a ``set`` and a ``light`` action:
 ```json
