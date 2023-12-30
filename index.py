@@ -4,16 +4,23 @@ import json
 from time import sleep
 from random import randint
 import struct
+import re
+
+hex_re = r"[a-fA-F0-9]{6}"
 
 nanoleaf_host = '192.168.1.25'
 nanoleaf_udp_port = 60222
 
 nanoleaf_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
+
 nl = Nanoleaf(nanoleaf_host)
 nl.enable_extcontrol()
+
 ids = nl.get_ids()
 ids.pop(len(ids)-1)
 
+random_id_arr = []
+random_id_arr = ids.copy()
 
 class Color:
     def __init__(self,r,g,b,w):
@@ -25,8 +32,10 @@ class Color:
 
 colors = {
             "black": Color(0,0,0,0),
+            "grey": Color(127,127,127,0),
             "white": Color(255,255,255,0),
             "red": Color(255,0,0,0),
+            "green": Color(0,255,0,0),
             "blue": Color(0,0,255,0),
         }
 
@@ -47,37 +56,39 @@ class Event:
         self.panel_states[str(panel_state.panel_id)] = panel_state
 
 
+
 def check_color(action):
-    color = ""
-    try:
-        color = colors[action["color"]]
-    except:
+    color = action["color"]
+    result = ""
+    if color in colors.keys():
+        result = colors[color]
+    elif re.search(hex_re,color):
+            temp = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+            result = Color(temp[0],temp[1],temp[2],0)
+    else:
         raise Exception("Invalid color at action " + str(action))
-    return color
+    return result
 
 
-def check_id(action):
+def check_id(action,ids_random):
     id = 0       
     if action["panel_id"] in ids:
         id = action["panel_id"]
     elif action["panel_id"] == "RAND":
-        i = randint(0,len(ids)-1)
-        id = ids[i]
-        #if ids_for_random == []:
-        #    ids_for_random = ids.copy()
-
+        i = randint(0,len(ids_random)-1)
+        id = ids_random.pop(i)
     else:
         raise Exception("Invalid id value at action " + str(action))
     return id
 
 
-def process_action(action):
+def process_action(action, ids_random):
     result = []
 
     match action["action"]:
         case "light":
             color = check_color(action)
-            id = check_id(action)
+            id = check_id(action, ids_random)
             
             result.append(PanelState(id,color,action["transition"]))
         case "set":
@@ -98,14 +109,12 @@ def translate_panel_state_to_bytes(panel_state):
     result += panel_state.color.w.to_bytes(1, "big")
     result += panel_state.transition.to_bytes(2, "big")
 
-    #print(panel_state.transition)
-    #print(panel_state.transition.to_bytes(2, "big"))
-    #print(struct.pack("f", panel_state.transition))
-
     return result
 
 
 def process_file(data):
+    ids_random = ids.copy()
+
     events = []
     time = 0
     tempEvent = Event(time,{})
@@ -114,7 +123,7 @@ def process_file(data):
             events.append(tempEvent)
             time = float(action["time"])
             tempEvent = Event(time,{})
-        panel_states = process_action(action)
+        panel_states = process_action(action, ids_random)
         for state in panel_states:
             tempEvent.add_panel_state(state)
     events.append(tempEvent)
@@ -146,7 +155,7 @@ def play_lightshow(events):
             print("lightshow ended")
 
 
-f = open('handCrushed-final-converted.json')
+f = open('test-converted.json')
 data = json.load(f)
 
 bpm = data["metadata"]["bpm"]
