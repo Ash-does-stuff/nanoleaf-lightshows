@@ -55,6 +55,7 @@ An action has to have these values:
     - Only required when the action has the ``light`` type.
     - The ID of the target panel.
     - Can either be the ID of a Nanoleaf panel, one of the aliases set in the ``dictionary`` value, or "RAND", which lights up a random available panel.
+
 An example of a ``set`` and a ``light`` action:
 ```json
         {
