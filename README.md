@@ -1,7 +1,7 @@
 # nanoleaf-lightshows
 Lets you create light shows for Nanoleaf products :3 (I hope)
 
-## Setup
+## Charting
 Create an empty JSON file and in it, paste this template:
 ```json
 {
