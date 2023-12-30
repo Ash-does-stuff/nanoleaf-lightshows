@@ -15,7 +15,8 @@ for action in fileJson["actions"]:
     if changeTime:
         action["time"] = float(action["time"]) + timeOffset
     if changeIDs and action["action"] != "set" and action["panel_id"] != "RAND":
-        action["panel_id"] = dictionary[action["panel_id"]]
+        if action["panel_id"] in dictionary.keys():
+            action["panel_id"] = dictionary[action["panel_id"]]
 
 fileJson["actions"].sort(key=(lambda action : action["time"]))
 
