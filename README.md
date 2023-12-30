@@ -1,7 +1,7 @@
 # nanoleaf-lightshows
 lets you create lightshows for nanoleaf products :3 (I hope)
 
-##Setup
+#Setup
 Create an empty JSON file and in it, paste this template:
 ```json
 {
