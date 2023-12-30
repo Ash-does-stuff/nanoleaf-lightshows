@@ -46,7 +46,7 @@ An action has to have these values:
 - color
     - The color in which the panel/s should light up.
     - Can either be a hex string or one of the color names below
-        - ``black``, ``grey``, ``white``, ``red``, ``green``, ``blue``
+        - ``black`` (the panel is turned off), ``grey``, ``white``, ``red``, ``green``, ``blue``
 - transition
     - The time it takes to transition from the previous panel state to this one.
     - Is an integer larger or equal to one.
