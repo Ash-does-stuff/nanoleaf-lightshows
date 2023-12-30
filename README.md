@@ -7,14 +7,16 @@ Create an empty JSON file and in it, paste this template:
 {
     "metadata": {
         "bpm": 60.0,
+        "offset": 100
     },
     "dictionary":  {},
     "actions": []
 }
 ```
 ### Metadata
-The only important value here is the BPM. This is what the timing of your actions is tied to. 
-If you aren't charting a light show for a song, set the BPM to 60, so that 1 beat equals 1 second.
+The only important values here are the BPM and the offset. 
+The timing of actions is tied to the BPM. If you aren't charting a light show for a song, set the BPM to 60, so that 1 beat equals 1 second.
+Offset is the amount of time in miliseconds the program waits before playing the light show.
 
 You can also add any other values you wish here, for example, the chart's author or the song the light show is charted to.
 ### Dictionary
