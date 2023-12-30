@@ -8,7 +8,7 @@ import re
 
 hex_re = r"[a-fA-F0-9]{6}"
 
-nanoleaf_host = '192.168.1.25'
+nanoleaf_host = 'YOUR NANOLEAF IP'
 nanoleaf_udp_port = 60222
 
 nanoleaf_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
@@ -57,6 +57,17 @@ class Event:
 
 
 
+
+def create_panel_data(panel_ids):
+    important_panels = {}
+    for id in panel_ids:
+        important_panels[id] = False
+    return {
+        "ids_random": ids.copy(),
+        "important_panels": important_panels
+    }
+
+
 def check_color(action):
     color = action["color"]
     result = ""
@@ -82,20 +93,36 @@ def check_id(action,ids_random):
     return id
 
 
-def process_action(action, ids_random):
+def process_action(action, panel_data):
     result = []
+
+    important = False
+    try:
+        print("haaaa")
+        important = action["important"]
+    except:
+        print("no important value, skipping")
 
     match action["action"]:
         case "light":
             color = check_color(action)
-            id = check_id(action, ids_random)
+            id = check_id(action, panel_data["ids_random"])
             
+            panel_data["important_panels"][id] = important
+
             result.append(PanelState(id,color,action["transition"]))
+
         case "set":
             color = check_color(action)
 
             for id in ids:
-                result.append(PanelState(id,color,action["transition"]))
+                if important:
+                    panel_data["important_panels"][id] = False
+
+                if not panel_data["important_panels"][id]:
+                    result.append(PanelState(id,color,action["transition"]))
+                
+
     return result
 
 
@@ -113,7 +140,7 @@ def translate_panel_state_to_bytes(panel_state):
 
 
 def process_file(data):
-    ids_random = ids.copy()
+    panel_data = create_panel_data(ids)
 
     events = []
     time = 0
@@ -123,13 +150,14 @@ def process_file(data):
             events.append(tempEvent)
             time = float(action["time"])
             tempEvent = Event(time,{})
-        panel_states = process_action(action, ids_random)
+        panel_states = process_action(action, panel_data)
         for state in panel_states:
             tempEvent.add_panel_state(state)
     events.append(tempEvent)
 
     events.sort(key=(lambda event : event.time))
 
+    sleep(data["metadata"]["offset"]/1000)
     play_lightshow(events)
 
 
@@ -155,7 +183,7 @@ def play_lightshow(events):
             print("lightshow ended")
 
 
-f = open('test-converted.json')
+f = open('pharmacy-converted.json')
 data = json.load(f)
 
 bpm = data["metadata"]["bpm"]
