@@ -12,7 +12,6 @@ Create an empty JSON file and in it, paste this template:
     "actions": []
 }
 ```
-Let me explain each of the values
 ### Metadata
 The only important value here is the BPM. This is what the timing of your actions is tied to. 
 If you aren't charting a light show for a song, set the BPM to 60, so that 1 beat equals 1 second.
