@@ -43,7 +43,7 @@ class Event:
         self.time = time
         self.panel_states = panel_states
 
-    def addPanelState(self,panel_state):
+    def add_panel_state(self,panel_state):
         self.panel_states[str(panel_state.panel_id)] = panel_state
 
 
@@ -116,8 +116,10 @@ def process_file(data):
             tempEvent = Event(time,{})
         panel_states = process_action(action)
         for state in panel_states:
-            tempEvent.addPanelState(state)
+            tempEvent.add_panel_state(state)
     events.append(tempEvent)
+
+    events.sort(key=(lambda event : event.time))
 
     play_lightshow(events)
 
@@ -144,7 +146,7 @@ def play_lightshow(events):
             print("lightshow ended")
 
 
-f = open('handCrushed-IWas2-converted.json')
+f = open('handCrushed-final-converted.json')
 data = json.load(f)
 
 bpm = data["metadata"]["bpm"]

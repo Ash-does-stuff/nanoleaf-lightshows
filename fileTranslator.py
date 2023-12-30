@@ -1,7 +1,10 @@
 import json
 
-fileName = "handCrushed"
-timeOffset = 0
+fileName = "handCrushed-final"
+timeOffset = 30
+
+changeTime = True
+changeIDs = False
 
 dictionary = {
     "a": 34881,
@@ -25,9 +28,12 @@ file = open(fileName + ".json", "r")
 fileJson = json.loads(file.read())
 
 for action in fileJson["actions"]:
-    action["time"] = float(action["time"]) + timeOffset
-    if action["action"] != "set":
+    if changeTime:
+        action["time"] = float(action["time"]) + timeOffset
+    if changeIDs and action["action"] != "set":
         action["panel_id"] = dictionary[action["panel_id"]]
+
+fileJson["actions"].sort(key=(lambda action : action["time"]))
 
 f = open(fileName + "-converted.json", "w")
 f.write(json.dumps(fileJson))
