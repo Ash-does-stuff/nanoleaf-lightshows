@@ -40,10 +40,10 @@ An action has to have these values:
     - The length of a beat is tied to the BPM value that was set previously in the metadata.
 - action
     - The type of the action
-    - light
+    - ``light``
         - Lights up one individual panel.
         - Actions with this type require an extra ``panel_id`` value.
-    - set
+    - ``set``
         - Light up all available panels.
 - color
     - The color in which the panel/s should light up.
